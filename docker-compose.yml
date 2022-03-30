@@ -1,0 +1,53 @@
+version: "3.8"
+
+networks:
+  symfony-network:
+
+services:
+  mariadb:
+    container_name: mariadb
+    image: mariadb:10.4.19
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - symfony-network
+    environment:
+      MARIADB_ROOT_PASSWORD: 'root'
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: 'yes'
+      MARIADB_DATABASE: 'api'
+      MARIADB_USER: 'apiuser'
+      MARIADB_PASSWORD: 'apiuser'
+    ports:
+      - '3306:3306'
+  php:
+    container_name: php
+    build:
+      context: ./api
+    ports:
+      - '9000:9000'
+    volumes:
+      - ./api:/var/www/api
+    depends_on:
+      - mariadb
+    networks:
+      - symfony-network
+  nginx:
+    container_name: nginx
+    image: nginx:stable-alpine
+    ports:
+      - '80:80'
+    volumes:
+      - ./api:/var/www/api
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+      - mariadb
+    networks:
+      - symfony-network
+  vue:
+    container_name: app
+    build:
+      context: ./app
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./app:/var/www/app
