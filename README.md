@@ -13,16 +13,10 @@ The installation can be done using docker. You just have to execute the followin
 docker-compose up -d --build
 ```
 
-To install the project, please run the following command
-
-```
-docker-compose exec composer install
-```
-
-Then, to initialize the database, you need to run the following command
+To install the project, please run the following command. 
 
 ```bash
-docker-compose exec php bin/console doctrine:migrations:migrate
+docker exec -it php /var/www/api/installation.sh
 ```
 
 ### Usage

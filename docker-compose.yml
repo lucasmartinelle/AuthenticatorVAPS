@@ -16,14 +16,10 @@ services:
       MARIADB_DATABASE: 'api'
       MARIADB_USER: 'apiuser'
       MARIADB_PASSWORD: 'apiuser'
-    ports:
-      - '3306:3306'
   php:
     container_name: php
     build:
       context: ./api
-    ports:
-      - '9000:9000'
     volumes:
       - ./api:/var/www/api
     depends_on:
