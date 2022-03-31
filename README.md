@@ -16,7 +16,15 @@ docker-compose up -d --build
 To install the project, please run the following command. 
 
 ```bash
-docker exec -it php /var/www/api/installation.sh
+docker exec -it php bash /var/www/api/installation.sh
+```
+
+If you want to deploy your application on a domain other than localhost, modify the following line in api/.env.local.php
+
+```php
+//'CORS_ALLOW_ORIGIN' => '^https?://(localhost|127\\.0\\.0\\.1)(:[0-9]+)?$',
+//CHANGE THIS BY
+'CORS_ALLOW_ORIGIN' => '^https?://(sub.domain.ext)(:[0-9]+)?$',
 ```
 
 ### Usage

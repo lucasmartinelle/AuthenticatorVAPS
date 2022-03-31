@@ -2,7 +2,7 @@
 
 cd /var/www/api
 
-cat .env.local.php | sed 's/secretkey/'$(date +%s | sha256sum | base64 | head -c 32 ; echo)'/g' > .env.local.php
+sed -i 's/secretkey/'$(echo $RANDOM | sha256sum | base64 | head -c 32 ; echo)'/' .env.local.php
 
 composer install --no-interaction
 
