@@ -12,6 +12,10 @@ WORKDIR /var/www/api
 
 COPY . .
 
+RUN chmod +x installation.sh
+
+RUN chmod 775 /var/www/api -R
+
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 RUN curl -sS https://get.symfony.com/cli/installer | bash
