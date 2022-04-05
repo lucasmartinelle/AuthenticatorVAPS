@@ -10,30 +10,40 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use App\Controller\UserController;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\Table(name="`user`")
  * 
+ * 
  * @ApiResource(
  *  normalizationContext={"groups"={"user:read"}},
  *  denormalizationContext={"groups"={"user:write"}},
  *  collectionOperations={
- *      "get"={"pagination_enabled"=false},
- *      "post"={"pagination_enabled"=false},
- *      "me"={
- *          "method"="GET",
- *          "path"="/users/me",
- *          "controller"=UserController::class,
+ *      "get"={
  *          "pagination_enabled"=false,
- *          "swagger_context"={
- *              "description"="qscqscqsc"
- *          }
- *      }
+ *          "access_control"="is_granted('ROLE_ADMIN')"
+ *      },
+ *      "post"
+ *  },
+ *  itemOperations={
+ *      "get",
+ *      "put" = {
+ *          "access_control"="is_granted('ROLE_ADMIN')" 
+ *      }, 
+ *      "delete" = {
+ *          "access_control"="is_granted('ROLE_ADMIN')" 
+ *      },
+ *      "patch" = {
+ *          "access_control"="is_granted('ROLE_ADMIN')" 
+ *      }, 
  *  }
  * )
+ * 
+ * @UniqueEntity(fields={"email"})
  **/
-
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
@@ -47,6 +57,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Assert\NotBlank()
+     * @Assert\Email()
      * 
      * @Groups({"user:read", "user:write"})
      */
@@ -69,6 +81,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @Groups("user:write")
      * 
      * @SerializedName("password")
+     * @Assert\NotBlank()
      */
     private $plainPassword;
 
@@ -76,6 +89,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\Column(type="string", length=255)
      * 
      * @Groups({"user:read", "user:write"})
+     * @Assert\NotBlank()
      */
     private $username;
 
@@ -106,12 +120,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return (string) $this->email;
     }
 
-    /**
-     * @deprecated since Symfony 5.3, use getUserIdentifier instead
-     */
     public function getUsername(): string
     {
-        return (string) $this->email;
+        return (string) $this->username;
     }
 
     /**

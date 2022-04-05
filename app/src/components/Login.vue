@@ -8,14 +8,16 @@
       />
       <Form @submit="handleLogin" :validation-schema="schema">
         <div class="form-group">
-          <label for="username">Email</label>
-          <Field name="username" type="text" class="form-control" />
-          <ErrorMessage name="username" class="error-feedback" />
+          <label for="email">Email</label>
+          <Field name="email" type="email" class="form-control" />
+          <ErrorMessage name="email" class="error-feedback text-danger" />
+          <span class="text-danger">{{ errors['email'] }}</span>
         </div>
         <div class="form-group">
           <label for="password">Password</label>
           <Field name="password" type="password" class="form-control" />
-          <ErrorMessage name="password" class="error-feedback" />
+          <ErrorMessage name="password" class="error-feedback text-danger" />
+          <span class="text-danger">{{ errors['password'] }}</span>
         </div>
         <div class="form-group">
           <button class="btn btn-primary btn-block" :disabled="loading">
@@ -46,14 +48,24 @@ export default {
     ErrorMessage,
   },
   data() {
+    var errors = {"email" : "", "password": ""};
     const schema = yup.object().shape({
-      username: yup.string().required("Username is required!"),
-      password: yup.string().required("Password is required!"),
+      email: yup
+        .string()
+        .required("Email is required!")
+        .email("Email is invalid!")
+        .max(50, "Must be maximum 50 characters!"),
+      password: yup
+        .string()
+        .required("Password is required!")
+        .min(6, "Must be at least 6 characters!")
+        .max(40, "Must be maximum 40 characters!"),
     });
     return {
       loading: false,
       message: "",
       schema,
+      errors,
     };
   },
   computed: {
@@ -63,7 +75,7 @@ export default {
   },
   created() {
     if (this.loggedIn) {
-      //this.$router.push("/dashboard");
+      this.$router.push("/dashboard");
     }
   },
   methods: {
@@ -71,9 +83,7 @@ export default {
       this.loading = true;
       this.$store.dispatch("auth/login", user).then(
         () => {
-          this.$store.dispatch("auth/me").then(() => {
-            this.$router.push("/dashboard");
-          });
+          this.$router.push("/dashboard");
         },
         (error) => {
           this.loading = false;
@@ -83,9 +93,18 @@ export default {
               error.response.data.message) ||
             error.message ||
             error.toString();
+
+          console.log(error.response.data);
+
+          if(error.response.data.error){
+            this.errors['email'] = error.response.data.error
+          } else if(error.response.data.violations){
+            error.response.data.violations.forEach(element => 
+              this.errors[element.propertyPath] = element.message
+            );
+          }
         }
       );
-      //console.log(localStorage);
     },
   },
 };

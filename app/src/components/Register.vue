@@ -11,17 +11,20 @@
           <div class="form-group">
             <label for="username">Username</label>
             <Field name="username" type="text" class="form-control" />
-            <ErrorMessage name="username" class="error-feedback" />
+            <ErrorMessage name="username" class="error-feedback text-danger" />
+            <span class="text-danger">{{ errors['username'] }}</span>
           </div>
           <div class="form-group">
             <label for="email">Email</label>
             <Field name="email" type="email" class="form-control" />
-            <ErrorMessage name="email" class="error-feedback" />
+            <ErrorMessage name="email" class="error-feedback text-danger" />
+            <span class="text-danger">{{ errors['email'] }}</span>
           </div>
           <div class="form-group">
             <label for="password">Password</label>
             <Field name="password" type="password" class="form-control" />
-            <ErrorMessage name="password" class="error-feedback" />
+            <ErrorMessage name="password" class="error-feedback text-danger" />
+            <span class="text-danger">{{ errors['password'] }}</span>
           </div>
           <div class="form-group">
             <button class="btn btn-primary btn-block" :disabled="loading">
@@ -56,6 +59,7 @@ export default {
     ErrorMessage,
   },
   data() {
+    var errors = {"username": "", "email": "", "password": ""};
     const schema = yup.object().shape({
       username: yup
         .string()
@@ -78,6 +82,7 @@ export default {
       loading: false,
       message: "",
       schema,
+      errors,
     };
   },
   computed: {
@@ -110,6 +115,12 @@ export default {
             error.toString();
           this.successful = false;
           this.loading = false;
+
+          if(error.response.data.violations){
+            error.response.data.violations.forEach(element => 
+              this.errors[element.propertyPath] = element.message
+            );
+          }
         }
       );
     },

@@ -7,6 +7,7 @@ use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use ApiPlatform\Core\DataPersister\ContextAwareDataPersisterInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  *
@@ -15,13 +16,16 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
 {
     private $_entityManager;
     private $_passwordEncoder;
+    private $_doctrine;
 
     public function __construct(
         EntityManagerInterface $entityManager,
-        UserPasswordEncoderInterface $passwordEncoder
+        UserPasswordEncoderInterface $passwordEncoder,
+        ManagerRegistry $doctrine
     ) {
         $this->_entityManager = $entityManager;
         $this->_passwordEncoder = $passwordEncoder;
+        $this->_doctrine = $doctrine;
     }
 
     /**
@@ -46,6 +50,12 @@ class UserDataPersister implements ContextAwareDataPersisterInterface
             );
 
             $data->eraseCredentials();
+        }
+
+        $amountOfUsers = $this->_doctrine->getRepository(User::class)->countall();
+
+        if($amountOfUsers == 0){
+            $data->setRoles(array("ROLE_ADMIN"));
         }
 
         $this->_entityManager->persist($data);
