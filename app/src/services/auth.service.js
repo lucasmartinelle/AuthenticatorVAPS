@@ -1,5 +1,6 @@
 import axios from 'axios';
-const API_URL = 'http://localhost/api';
+import VueJwtDecode from 'vue-jwt-decode';
+const API_URL = 'https://api.lucasmartinelle.com/api';
 class AuthService {
   login(user) {
     return axios
@@ -8,10 +9,13 @@ class AuthService {
         password: user.password
       })
       .then(response => {
+        var JWTData = response.data;
         if (response.data.token) {
-          localStorage.setItem('user', JSON.stringify(response.data));
+          JWTData = VueJwtDecode.decode(response.data.token);
+          JWTData['token'] = response.data.token;
+          localStorage.setItem('user', JSON.stringify(JWTData));
         }
-        return response.data;
+        return JWTData;
       });
   }
   logout() {

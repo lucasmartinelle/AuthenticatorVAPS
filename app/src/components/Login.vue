@@ -94,8 +94,6 @@ export default {
             error.message ||
             error.toString();
 
-          console.log(error.response.data);
-
           if(error.response.data.error){
             this.errors['email'] = error.response.data.error
           } else if(error.response.data.violations){
