@@ -26,7 +26,15 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          "pagination_enabled"=false,
  *          "access_control"="is_granted('ROLE_ADMIN')"
  *      },
- *      "post"
+ *      "post"={
+ *          "pagination_enabled"=false
+ *      },
+ *      "me"={
+ *          "method"="GET",
+ *          "path"="/users/me",
+ *          "controller"=UserController::class,
+ *          "pagination_enabled"=false
+ *      }
  *  },
  *  itemOperations={
  *      "get",
