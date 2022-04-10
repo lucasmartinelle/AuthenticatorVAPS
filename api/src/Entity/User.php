@@ -37,7 +37,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  *      }
  *  },
  *  itemOperations={
- *      "get",
+ *      "get" = {
+ *          "access_control"="is_granted('ROLE_ADMIN')" 
+ *      },
  *      "put" = {
  *          "access_control"="is_granted('ROLE_ADMIN')" 
  *      }, 
